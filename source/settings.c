@@ -113,65 +113,6 @@ void update_callback(int sel)
 
     if (!apollo_config.update)
         return;
-		
-	LOG("checking latest Apollo version at %s", APOLLO_UPDATE_URL);
-
-	if (!http_download(APOLLO_UPDATE_URL, "", APOLLO_LOCAL_CACHE "ver.check", 0))
-	{
-		LOG("http request to %s failed", APOLLO_UPDATE_URL);
-		return;
-	}
-
-	char *buffer;
-	long size = 0;
-
-	buffer = readTextFile(APOLLO_LOCAL_CACHE "ver.check", &size);
-
-	if (!buffer)
-		return;
-
-	LOG("received %ld bytes", size);
-
-	static const char find[] = "\"name\":\"Apollo Save Tool v";
-	const char* start = strstr(buffer, find);
-	if (!start)
-	{
-		LOG("no name found");
-		goto end_update;
-	}
-
-	LOG("found name");
-	start += sizeof(find) - 1;
-
-	char* end = strchr(start, '"');
-	if (!end)
-	{
-		LOG("no end of name found");
-		goto end_update;
-	}
-	*end = 0;
-	LOG("latest version is %s", start);
-
-	if (strcasecmp(APOLLO_VERSION, start) == 0)
-	{
-		LOG("no need to update");
-		goto end_update;
-	}
-
-	start = strstr(end+1, "\"browser_download_url\":\"");
-	if (!start)
-		goto end_update;
-
-	start += 24;
-	end = strchr(start, '"');
-	if (!end)
-	{
-		LOG("no download URL found");
-		goto end_update;
-	}
-
-	*end = 0;
-	LOG("download URL is %s", start);
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
@@ -179,8 +120,7 @@ void update_callback(int sel)
 			show_message("An Store API Errror has occurred\ncheck /data/store_api.log for more info");
 	}
 
-end_update:
-	free(buffer);
+
 	return;
 }
 
