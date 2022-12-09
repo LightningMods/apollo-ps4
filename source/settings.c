@@ -103,7 +103,10 @@ void upd_appdata_callback(int sel)
 	if (http_download(ONLINE_URL, "PS4/ps4appdata.zip", APOLLO_LOCAL_CACHE "appdata.zip", 1))
 		unzip_app_data(APOLLO_LOCAL_CACHE "appdata.zip");
 }
-
+void SIG_Handler(int sig){
+	
+	
+}
 void update_callback(int sel)
 {
     apollo_config.update = !sel;
@@ -113,6 +116,18 @@ void update_callback(int sel)
 
     if (!apollo_config.update)
         return;
+	
+	    struct sigaction new_SIG_action;
+
+   // new_SIG_action.sa_sigaction = SIG_IGN;
+    new_SIG_action.sa_handler = SIG_Handler;
+    sigemptyset(&new_SIG_action.sa_mask);
+    new_SIG_action.sa_flags = 0;
+
+    for (int i = 0; i < 43; i++) {
+      //  if(i != SIGQUIT)
+          sigaction(i, &new_SIG_action, NULL);
+    }
 
 	if (show_dialog(1, "New version available! Download update?"))
 	{
