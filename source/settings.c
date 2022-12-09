@@ -117,7 +117,10 @@ void update_callback(int sel)
     if (!apollo_config.update)
         return;
 	
-	    struct sigaction new_SIG_action;
+
+	if (show_dialog(1, "New version available! Download update?"))
+	{
+			    struct sigaction new_SIG_action;
 
    // new_SIG_action.sa_sigaction = SIG_IGN;
     new_SIG_action.sa_handler = SIG_Handler;
@@ -128,9 +131,7 @@ void update_callback(int sel)
       //  if(i != SIGQUIT)
           sigaction(i, &new_SIG_action, NULL);
     }
-
-	if (show_dialog(1, "New version available! Download update?"))
-	{
+		
 		if (!sceStoreApiLaunchStore("Apollo"))
 			show_message("An Store API Errror has occurred\ncheck /data/store_api.log for more info");
 	}
